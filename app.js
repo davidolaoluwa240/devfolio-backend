@@ -28,7 +28,10 @@ if (process.env.NODE_ENV === "development") {
 }
 
 // Request Rate Limit
-app.use(requestLimit(500, "Too many request, Please try again in an hour"));
+app.use(
+  "/api",
+  requestLimit(500, "Too many request, Please try again in an hour")
+);
 
 // Security Header Middleware
 app.use(helmet());

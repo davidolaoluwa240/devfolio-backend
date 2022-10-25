@@ -20,7 +20,7 @@ const userSchema = mongoose.Schema(
     },
     password: {
       type: String,
-      minLength: [8, "User Password must be atleast 8 characters"],
+      minLength: [8, "User password must be atleast 8 characters"],
       required: [true, "User must have a password"],
       select: false,
     },
@@ -35,25 +35,21 @@ const userSchema = mongoose.Schema(
       },
       select: false,
     },
-    role: {
-      type: String,
-      enum: {
-        values: ["user", "admin"],
-        message: "User role can either be user or admin",
-      },
-      default: "user",
-    },
     avatar: {
       url: String,
       cloudinaryId: string,
     },
     bio: {
       type: String,
-      minLength: [50, "User bio must be atleast 50 characters"],
+      minLength: [20, "User bio must be atleast 20 characters"],
       maxLength: [600, "User bio must be less than or equal 600 characters"],
     },
     phone: String,
     skills: [String],
+    resume: {
+      url: String,
+      cloudinaryId: String,
+    },
     socials: {
       linkedinUrl: String,
       githubUrl: String,
@@ -85,7 +81,7 @@ const userSchema = mongoose.Schema(
 // Plugins
 userSchema.plugin(beautifyUnique);
 
-// Model
+// User Model
 const User = mongoose.model("User", userSchema);
 
 module.exports = User;

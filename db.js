@@ -14,7 +14,7 @@ const connectDB = async (cb) => {
     });
     cb(connection.connections);
   } catch (err) {
-    console.log(`ERROR 💥💥: An orror Occur while connecting to database`);
+    console.log(`ERROR 💥💥: An error Occur while connecting to database`);
   }
 };
 
