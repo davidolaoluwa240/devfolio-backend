@@ -1,7 +1,10 @@
 // Modules
+const crypto = require("crypto");
 const mongoose = require("mongoose");
 const Validator = require("validator").default;
 const beautifyUnique = require("mongoose-beautiful-unique-validation");
+const bcrypt = require("bcryptjs");
+const dateFnsAdd = require("date-fns/add");
 
 // User Schema
 const userSchema = mongoose.Schema(
@@ -66,6 +69,7 @@ const userSchema = mongoose.Schema(
     verificationTokenExpires: { type: Date, select: false },
     passwordResetToken: { type: String, select: false },
     passwordResetTokenExpires: { type: Date, select: false },
+    passwordChangedAt: Date,
     isVerified: {
       type: Boolean,
       default: false,
@@ -80,6 +84,34 @@ const userSchema = mongoose.Schema(
 
 // Plugins
 userSchema.plugin(beautifyUnique);
+
+// Middlewares
+// Document Middleware
+userSchema.pre("save", async function (next) {
+  if (this.isModified("password")) {
+    this.password = await bcrypt.hash(this.password, 12);
+    this.passwordConfirm = undefined;
+  }
+  next();
+});
+
+// Instance Methods
+userSchema.methods.isPasswordCorrect = async function (comparePassword) {
+  return await bcrypt.compare(comparePassword, this.password);
+};
+
+userSchema.methods.createVerificationToken = function () {
+  const token = crypto.randomBytes(36).toString("hex");
+  this.verificationToken = crypto
+    .createHash("sha256")
+    .update(token)
+    .digest("hex");
+  this.verificationTokenExpires = dateFnsAdd(Date.now(), {
+    hours: process.env.VERIFICATION_TOKEN_EXPIRES,
+  });
+  this.active = false;
+  return token;
+};
 
 // User Model
 const User = mongoose.model("User", userSchema);

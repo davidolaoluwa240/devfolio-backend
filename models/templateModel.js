@@ -15,8 +15,16 @@ const templateSchema = mongoose.Schema(
       type: String,
       required: [true, "Template description is required"],
     },
+    plan: {
+      type: String,
+      enum: {
+        values: ["free", "premium"],
+        message: "Template plan can either be free or premium",
+      },
+      default: "free",
+    },
     thumbnail: {
-      url: String,
+      url: { type: String, required: [true, "Template thumbnail is required"] },
       cloundinaryId: String,
     },
     downloadUrl: String,
